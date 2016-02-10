@@ -18,6 +18,11 @@ margin-left: 10%;
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
 <script>
+var a = parseInt(Math.random() * 100),
+		b = parseInt(Math.random() * 100),
+		c = parseInt(Math.random() * 100),
+		d = parseInt(Math.random() * 100);
+var dataset = [ a, b, c, d];
 
 //Width and height
 var windowWidth = $(window).width();
@@ -25,8 +30,6 @@ var windowHeight = $(window).height();
 var w = windowWidth * 90/100;
 var h = windowHeight * 90/100;
 var barPadding = windowWidth * 10/100;
-
-var dataset = [ 5, 10, 13, 90];
 
 //Create SVG element
 var svg = d3.select("body")
