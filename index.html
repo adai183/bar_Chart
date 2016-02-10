@@ -23,17 +23,19 @@ var a = parseInt(Math.random() * 100),
 
 var dataset =[a, b, c, d];
 
+// helper function too simulate live data
 var updateData = function(){
-	a = parseInt(Math.random() * 100),
-	b = parseInt(Math.random() * 100),
-	c = parseInt(Math.random() * 100),
-	d = parseInt(Math.random() * 100);
-	dataset = [a, b, c, d];
+  dataset = [];
+  for (var i = 0; i < 4; i++){
+  	dataset.push(parseInt(Math.random() * 100));
+  }
 	console.log(dataset);
+  drawVis();
+	$( "svg" ).fadeIn( "slow" );
 };
 
 // simullate live data input
-var update = setInterval(updateData, 1000);
+var update = setInterval(updateData, 2000);
 
 //Width and height
 var windowWidth = $(window).width();
@@ -51,52 +53,48 @@ var y = d3.scale.sqrt()
 var svg = d3.select("body")
 	.append("svg")
 	.attr("width", w)
-	.attr("height", h);
+	.attr("height", h)
+	.attr("style", "display:none;");
 
 console.log(dataset);
+	// create inicial vis
+	function drawVis(){
 
-//Draw static Rectangle
-var rectangle = svg.append("rect")
-	.attr("x", 0)
-	.attr("y", h - bottomRectHight)
-	.attr("width", w)
-	.attr("height", bottomRectHight)
-	.attr("fill", "rgb(250, 128, 114)");
+		//Draw static Rectangle for bottom
+		var rectangle = svg.append("rect")
+			.attr("x", 0)
+			.attr("y", h - bottomRectHight)
+			.attr("width", w)
+			.attr("height", bottomRectHight)
+			.attr("fill", "rgb(250, 128, 114)");
 
-	svg.selectAll(".input")
-		.data(dataset)
-		.enter()
-		.append("rect")
-		.attr("class", "input")
-		.attr("fill", "rgb(250, 128, 114)")
-		.attr("x", function(d, i) {
-			return i * (w / dataset.length) + 2.5/100 * w;
-		})
-		.attr("y",  function(d) {
-			return h;
-		})
-		.attr("width", w / dataset.length - barPadding)
-		.attr("height", y(0))
-		.transition().duration(1750).ease("linear")
-		.attr("y",  function(d) {
-			return y(d);
-		})
-		.attr("height", function(d) {
-			return h - y(d);
+
+	 var uSel = svg.selectAll(".input")
+			.data(dataset);
+
+	 uSel.exit().remove();
+
+	 uSel
+			.enter()
+			.append("rect")
+			.attr("class", "input")
+			.attr("fill", "rgb(250, 128, 114)");
+
+	 uSel
+			.attr("x", function(d, i) {
+				return i * (w / dataset.length) + 2.5/100 * w;
+			})
+			.attr("width", w / dataset.length - barPadding)
+			.attr("height", y(0))
+			.transition().duration(1750).ease("linear")
+			.attr("y",  function(d) {
+				return y(d);
+			})
+			.attr("height", function(d) {
+				return h - y(d);
 	});
 
-var updateVis = function(){
-	svg.selectAll(".input")
-	.data(dataset)
-	.transition().duration(1750).ease("linear")
-	.attr("y",  function(d) {
-		return y(d);
-		})
-	.attr("height", function(d) {
-		return h - y(d);
-	});
-};
-var updateLoop = setInterval(updateVis, 2000);
+	}
 
 </script>
 
