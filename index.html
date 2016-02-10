@@ -7,7 +7,7 @@ body{
 	background-color: black;
 }
 svg {
-margin-left: 10%;
+	margin-left: 10%;
 }
 
 	</style>
@@ -22,7 +22,7 @@ var a = parseInt(Math.random() * 100),
 		b = parseInt(Math.random() * 100),
 		c = parseInt(Math.random() * 100),
 		d = parseInt(Math.random() * 100);
-var dataset = [ a, b, c, d];
+var dataset =[a, b, c, d];
 
 //Width and height
 var windowWidth = $(window).width();
@@ -30,29 +30,36 @@ var windowHeight = $(window).height();
 var w = windowWidth * 90/100;
 var h = windowHeight * 90/100;
 var barPadding = windowWidth * 10/100;
+var y = d3.scale.linear()
+    .range([h, 0])
+		.domain([0,100]);//since values vary between 0 and 100
 
 //Create SVG element
 var svg = d3.select("body")
-			.append("svg")
-			.attr("width", w)
-			.attr("height", h);
-
+	.append("svg")
+	.attr("width", w)
+	.attr("height", h);
+console.log(dataset)
 svg.selectAll("rect")
-   .data(dataset)
-   .enter()
-   .append("rect")
-	 .attr("fill", "rgb(250, 128, 114)")
-   .attr("x", function(d, i) {
-   		return i * (w / dataset.length);
-   })
-   .attr("y", function(d) {
-   		return h - (d * 4);
-   })
-   .attr("width", w / dataset.length - barPadding)
-   .attr("height", function(d) {
-   		return d * 4;
-   });
-
+	.data(dataset)
+	.enter()
+	.append("rect")
+	.attr("fill", "rgb(250, 128, 114)")
+	.attr("x", function(d, i) {
+		return i * (w / dataset.length);
+	})
+	.attr("y",  function(d) {
+		return h;
+	})
+	.attr("width", w / dataset.length - barPadding)
+	.attr("height", y(0))
+	.transition().duration(750).ease("linear")
+	.attr("y",  function(d) {
+		return y(d);
+	})
+	.attr("height", function(d) {
+		return h - y(d);
+});
 </script>
 
 </body>

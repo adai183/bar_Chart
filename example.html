@@ -1,0 +1,1725 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+    	<script src="http://d3js.org/d3.v3.min.js"></script>
+    	<script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+    	<style>
+			#maincontainer {
+				width:900px;
+				height: 600px;
+				float:left;
+				margin-right: 50px;
+			}
+
+			#vizcontainer {
+				width: 900px;
+				height: 550px;
+			}
+
+			#viznavcontainer {
+				width: 900px;
+				height: 50px;
+			}
+
+			#storycontainer {
+				width:300px;
+				height: 500px;
+				float:left;
+				padding-top: 5%;
+				margin-left: 50px;
+				font-size: 14.5px;
+			}
+
+			h1 {
+				color: black;
+				text-align: center;
+			}
+
+			.heading {
+				font-family: arial;
+				font-size: 24px;
+				font-weight: bold;
+			}
+
+			.axis {
+			  font-family: Verdana;
+			  font-size: 0.6em;
+			}
+
+			path {
+			  fill: none;
+			  stroke: black;
+			  stroke-width: 2px;
+			}
+
+			.tick {
+			  fill: none;
+			  stroke: black;
+			}
+
+			.xsinglelabs {
+				font-size: 14px;
+			}
+
+			.xgrouplabs {
+				font-size: 18px;
+				font-weight: bold;
+			}
+
+			.tooltip {
+				background: #eee;
+				box-shadow: 0 0 5px #999999;
+				color: #333;
+				display: none;
+				font-size: 12px;
+				padding: 10px;
+				position: absolute;
+				text-align: center;
+				width: 120px;
+				z-index: 10;
+			}
+
+			.filters {
+				position: absolute;
+				left: 0;
+				bottom: 0;
+				width: 500px;
+				height: 50px;
+				border: 1px solid #cdcdcd;
+			    border-color: rgba(0,0,0,.15);
+			    background-color: #DCDCDC;
+			    margin-bottom: 50px;
+			    margin-left: 100px;
+			    padding-top: 3px;
+			}
+
+			#seasonfilter {
+				position: absolute;
+				left: 150px;
+				width: 100px;
+			}
+
+			#teamfilter {
+				position: absolute;
+				left: 300px;
+				width: 175px;
+			}
+
+			#seasonfilterlabel {
+				position: absolute;
+				top: 5px;
+			}
+
+			#filtersectionlabel {
+				position: absolute;
+				left: 25px;
+				top: 5px;
+				font-weight: bold;
+			}
+
+			#teamfilterlabel {
+				position: absolute;
+				top: 5px;
+			}
+
+			.navbuttons {
+			  background: #3498db;
+			  background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+			  background-image: -moz-linear-gradient(top, #3498db, #2980b9);
+			  background-image: -ms-linear-gradient(top, #3498db, #2980b9);
+			  background-image: -o-linear-gradient(top, #3498db, #2980b9);
+			  background-image: linear-gradient(to bottom, #3498db, #2980b9);
+			  -webkit-border-radius: 28;
+			  -moz-border-radius: 28;
+			  border-radius: 28px;
+			  font-family: Arial;
+			  color: #ffffff;
+			  font-size: 20px;
+			  padding: 10px 20px 10px 20px;
+			  text-decoration: none;
+			  margin-top: 10px;
+			  margin-bottom: 10px;
+			}
+
+			.navbuttons:hover {
+			  background: #3cb0fd;
+			  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+			  cursor: pointer;
+			  text-decoration: none;
+			}
+
+			.navbuttons:focus {
+				outline:0;
+			}
+
+			#backbutton {
+				margin-right: 30px;
+				visibility: hidden;
+			}
+
+			#forwardbutton {
+				margin-left: 30px;
+			}
+
+			#vizstory {
+				border: 1px solid #cdcdcd;
+				padding: 4px;
+			    border-color: rgba(0,0,0,.15);
+			    border-radius: 10px;
+			    background-color: #DCDCDC;
+			    font-size: 14.5px;
+			}
+
+			#storyintro {
+				border: 1px solid #cdcdcd;
+				padding: 4px;
+			    border-color: rgba(0,0,0,.15);
+			    border-radius: 10px;
+			    background-color: #DCDCDC;
+			}
+
+			#navvizsentence {
+				padding: 5px;
+				font-weight: bold;
+				text-align: center;
+			}
+
+			.lineexplain {
+				font-size: 14px;
+			}
+    	</style>
+    	<script type="text/javascript">
+    		//complete function
+			function drawAnyViz(num) {
+				if(num===1) {
+					d3.csv("https://gist.githubusercontent.com/ntaylorwss/421b61e55f4ec9efe350/raw/a59a6f26d67adb5fda988e1dd5d130f1babe42f5/NFLdataViz1.csv", drawViz1);
+				} else if (num===2) {
+					d3.csv("https://gist.githubusercontent.com/ntaylorwss/421b61e55f4ec9efe350/raw/a59a6f26d67adb5fda988e1dd5d130f1babe42f5/NFLdataViz2.csv", drawViz2);
+				} else if(num===3) {
+					d3.csv("https://gist.githubusercontent.com/ntaylorwss/421b61e55f4ec9efe350/raw/a59a6f26d67adb5fda988e1dd5d130f1babe42f5/NFLdataViz3.csv", drawViz3);
+				} else {
+					d3.csv("https://gist.githubusercontent.com/ntaylorwss/421b61e55f4ec9efe350/raw/a59a6f26d67adb5fda988e1dd5d130f1babe42f5/NFLdataViz4.csv", drawViz4);
+				}
+			}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			//drawViz1 function
+			function drawViz1(data) {
+
+			    "use strict";
+
+				//clear svg
+			    d3.selectAll("svg").remove();
+
+			    //clear filters
+			    d3.select('.filters').remove();
+
+			    //Convert data to numeric
+			    data.OverallWeek = +data.OverallWeek;
+			    data.PublicNetATS = +data.PublicNetATS;
+			    data.PublicNetML = +data.PublicNetML;
+			    data.PublicNetTOT = +data.PublicNetTOT;
+
+			    //setup svg area
+			    var margin = 75;
+			    var width = 900-margin;
+			    var height = 550-margin;
+
+			    var svg = d3.select("#vizcontainer")
+			        .append("svg")
+			        .attr("width", width + margin)
+			        .attr("height", height + margin)
+			        .attr('x', 0)
+			        .attr('y', 0)
+			        .append('g');
+
+			    // setup X axis
+
+			    var x_extent = [0, 118];
+
+			    var x_scale = d3.scale.linear()
+			        .range([margin, width])
+			        .domain(x_extent);
+
+			    var x_axis = d3.svg.axis()
+			        .scale(x_scale)
+			        .ticks(5);
+
+			    // setup Y axis
+
+			    var y_extent = [-25, 2];
+
+			    var y_scale = d3.scale.linear()
+			        .range([height, margin])
+			        .domain(y_extent);
+
+			    var y_axis = d3.svg.axis()
+			        .scale(y_scale)
+			        .orient("left");
+
+			    //add axes
+
+			    svg
+			        .append('g')
+			        .attr('class', 'x axis')
+			        .attr('transform', "translate(0," + height + ")")
+			        .call(x_axis);
+
+			    svg
+			        .append('g')
+			        .attr('class', 'y axis')
+			        .attr('transform', "translate(" + margin + ",0)")
+			        .call(y_axis);
+
+			    //add line at 0 on y axis
+
+			    svg
+			      .append("line")
+			      .attr("x1", margin)
+			      .attr("y1", y_scale(0))
+			      .attr("x2", width)
+			      .attr("y2", y_scale(0))
+			      .style("stroke-width", 1)
+			      .attr('opacity',0.5)
+			      .attr("stroke", "black");
+
+			    //add dotted lines for seasons
+
+			    var seasonBreaks = [];
+
+			    for(var i=0; i<=5; i++) {
+			      seasonBreaks[i] = {'Year': 2010+i, 'Week': (i+1) * 17};
+			    }
+
+			    var sbreaks = svg
+			      .selectAll('.seasonbreaks')
+			      .data(seasonBreaks)
+			      .enter()
+			      .append('line')
+			        .attr('x1', function(d) {return x_scale(d.Week);})
+			        .attr('x2', function(d) {return x_scale(d.Week);})
+			        .attr('y1', y_scale(y_extent[0]))
+			        .attr('y2', y_scale(y_extent[1]))
+			        .attr("class", "seasonbreaks")
+			        .style('stroke-dasharray', "3, 3")
+			        .style("stroke-width", 1)
+			        .attr('opacity',0.5)
+			        .attr("stroke", "black");
+
+			      svg
+			      .selectAll('.seasonlabels')
+			      .data(seasonBreaks)
+			      .enter()
+			      .append('text')
+			        .attr('class', 'seasonlabels')
+			        .attr('x', function(d) {return x_scale(d['Week'])})
+			        .attr('y', y_scale(y_extent[0])-2)
+			        .style('font-size', '12px')
+			        .text(function(d) {return d['Year']});
+
+			    //add data line plot
+
+			    var interpolation = "linear";
+
+			    var lineATS = d3.svg.line()
+			                .x(function(d) {return x_scale(d.OverallWeek);})
+			                .y(function(d) {return y_scale(d.PublicNetATS);})
+			                .interpolate(interpolation);
+
+			    var lineML = d3.svg.line()
+			                .x(function(d) {return x_scale(d.OverallWeek);})
+			                .y(function(d) {return y_scale(d.PublicNetML);})
+			                .interpolate(interpolation);
+
+			    var lineTOT = d3.svg.line()
+			                .x(function(d) {return x_scale(d.OverallWeek);})
+			                .y(function(d) {return y_scale(d.PublicNetTOT);})
+			                .interpolate(interpolation);
+
+			    var lineTDur = 1500;
+
+			    var allNums = [d3.max(data, function(d) {return parseInt(d.numATS);}),
+			    				d3.max(data, function(d) {return parseInt(d.numML);}),
+			    				d3.max(data, function(d) {return parseInt(d.numTOT);})];
+
+			    var width_extent = d3.extent(allNums);
+
+			    var width_scale = d3.scale.linear()
+			    					.range([1,5])
+			    					.domain(width_extent);
+
+			    svg
+			      .append('path')
+			      .attr("class", "line")
+			      .attr('d', lineATS(data))
+			      .style('stroke-width', width_scale(allNums[0]))
+			      .style('stroke', 'blue')
+			      .attr('fill', 'none')
+			      .attr('stroke-dasharray', function() {
+			      	return this.getTotalLength() + " " + this.getTotalLength();
+			      })
+			      .attr('stroke-dashoffset', function() {
+			      	return this.getTotalLength();
+			      })
+			      .transition()
+			      	.duration(lineTDur)
+			      	.ease('linear')
+			      	.attr('stroke-dashoffset',0);
+
+			    svg
+			      .append('path')
+			      .attr("class", "line")
+			      .attr('d', lineML(data))
+			      .style('stroke-width', width_scale(allNums[1]))
+			      .style('stroke', 'green')
+			      .attr('fill', 'none')
+			      .attr('stroke-dasharray', function() {
+			      	return this.getTotalLength() + " " + this.getTotalLength();
+			      })
+			      .attr('stroke-dashoffset', function() {
+			      	return this.getTotalLength();
+			      })
+			      .transition()
+			      	.duration(lineTDur)
+			      	.ease('linear')
+			      	.attr('stroke-dashoffset',100);
+
+			    svg
+			      .append('path')
+			      .attr("class", "line")
+			      .attr('d', lineTOT(data))
+			      .style('stroke-width', width_scale(allNums[2]))
+			      .style('stroke','red')
+			      .attr('fill', 'none')
+			      .attr('stroke-dasharray', function() {
+			      	return this.getTotalLength() + " " + this.getTotalLength();
+			      })
+			      .attr('stroke-dashoffset', function() {
+			      	return this.getTotalLength();
+			      })
+			      .transition()
+			      	.duration(lineTDur)
+			      	.ease('linear')
+			      	.attr('stroke-dashoffset',0);
+
+			    //add axis labels
+
+			    svg
+			    	.append('text')
+					.attr('class', 'label')
+					.attr('id', 'x-label')
+					.attr('x', x_scale((x_extent[0]+x_extent[1])/2))
+					.attr('y', y_scale(y_extent[0]-3.5))
+					.text("Week");
+
+			    svg
+			    	.append('text')
+			    	.attr('class','label')
+			    	.attr('id','y-label')
+			    	.attr('x',0).attr('y',0)
+			    	.attr('transform', 'translate(' + x_scale(-6) + "," + y_scale((y_extent[0]+y_extent[1])*0.75) + "), rotate(-90)")
+			    	.text("Cumulative Net Loss in Dollars");
+
+			    //title
+			    svg
+			      .append('text')
+			      .attr('class', 'heading')
+			      .attr('x', width/2)
+			      .attr('y', margin/2)
+			      .attr('text-anchor', 'middle')
+			      .text("NFL Betting Cumulative Net Loss, per $1 Bet");
+
+
+			    //legend
+			    var legendLabels = [
+			    {stat: 'Against the Spread (ATS)', color: 'blue'},
+			    {stat: 'Money Line', color: 'green'},
+			    {stat: 'Over/Under', color: 'red'}
+			    ];
+
+			    svg.selectAll('rect')
+			    	.data(legendLabels)
+			    	.enter()
+			    	.append('rect')
+				    	.attr('x', x_scale(0.5))
+				    	.attr('y', function(d,i) {return y_scale(-(12+2*i));})
+				    	.attr('width', 25)
+				    	.attr('height', 3)
+				    	.attr('fill', function(d,i) {return legendLabels[i].color;});
+
+				svg.selectAll('.legendtext')
+					.data(legendLabels)
+					.enter()
+			    	.append('text')
+			    		.attr('class', 'legendtext')
+			    		.attr('x', x_scale(5))
+			    		.attr('y', function(d,i) {return y_scale(-(12.5+2*i));})
+			    		.attr('font-size', '12px')
+			    		.text(function(d) {return d.stat;});
+
+			   	svg.append('rect')
+		   			.attr('x', 0)
+		   			.attr('y', 0)
+		   			.attr('transform', 'translate('+x_scale(1)+','+y_scale(-18)+'), rotate(30)')
+		   			.attr('width', 25)
+		   			.attr('height', 3)
+		   			.attr('fill', 'black');
+
+		   		svg.append('text')
+		   			.attr('x', x_scale(5))
+		   			.attr('y', y_scale(-18.5))
+		   			.attr('font-size', '12px')
+		   			.text('Slope: Rate of loss');
+
+		   		svg.append('rect')
+		   			.attr('x', x_scale(1))
+		   			.attr('y', y_scale(-20))
+		   			.attr('width', 25)
+		   			.attr('height', 6)
+		   			.attr('fill', 'black');
+
+		   		svg.append('text')
+		   			.attr('x', x_scale(5.5))
+		   			.attr('y', y_scale(-20.5))
+		   			.attr('font-size', '12px')
+		   			.text('Thickness: popularity of bet');
+
+			    //build story container
+
+			    d3.select("#vizstory").remove();
+
+			    d3.select("#storycontainer")
+			    	.append('p')
+			    	.attr('id', "vizstory")
+			    	.text("This first graph, showing how much the general public has lost over the last 6 seasons broken down by bet type, \
+			    		immediately identifies the oddsmakers' cash cow: the money line. The public loses far more money on this type\
+			    		of bet than any other, but why? We know the oddsmakers choose the line, essentially a statement of a team's win\
+			    		probability, very carefully. Is it as close to reality as the public would like to believe?");
+			}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			//drawViz2 function
+			function drawViz2(data) {
+
+			    "use strict";
+
+				//clear svg
+			    d3.selectAll("svg").remove();
+
+			    //clear filters
+			    d3.select('.filters').remove();
+
+			    //add tooltip div
+			    d3.selectAll(".tooltip").remove();
+			    var tooltip = d3.select('#maincontainer')
+			        .append('div')
+			        .attr('class', 'tooltip');
+
+			    tooltip.append('div').attr('class','explain');
+
+			    //Convert data to numeric
+			    data.Line = +data.Line;
+			    data.Wins = +data.Wins;
+			    data.Games = +data.Games;
+			    data.WinP = +data.WinP;
+			    data.ImpliedWinP = +data.ImpliedWinP;
+
+			    //setup svg area
+			    var margin = 75;
+			    var width = 900-margin;
+			    var height = 550-margin;
+
+			    var svg = d3.select("#vizcontainer")
+			        .append("svg")
+			        .attr("width", width + margin)
+			        .attr("height", height + margin)
+			        .attr('x', 0)
+			        .attr('y', 0)
+			        .append('g');
+
+			    // setup X axis
+
+			    var x_extent = [0, 1];
+
+			    var x_scale = d3.scale.linear()
+			        .range([margin, width])
+			        .domain(x_extent);
+
+			    var x_axis = d3.svg.axis()
+			        .scale(x_scale)
+			        .ticks(5);
+
+			    // setup Y axis
+
+			    var y_extent = [0, 1];
+
+			    var y_scale = d3.scale.linear()
+			        .range([height, margin])
+			        .domain(y_extent);
+
+			    var y_axis = d3.svg.axis()
+			        .scale(y_scale)
+			        .ticks(5)
+			        .orient("left");
+
+			    //setup radius scale
+
+			    var r_extent = d3.extent(data, function(d) {return parseInt(d.Games);});
+
+			    var r_scale = d3.scale.sqrt()
+			    	.range([3, 10])
+			    	.domain(r_extent);
+
+			    //add axes
+
+			    svg
+			        .append('g')
+			        .attr('class', 'x axis')
+			        .attr('transform', "translate(0," + height + ")")
+			        .call(x_axis);
+
+			    svg
+			        .append('g')
+			        .attr('class', 'y axis')
+			        .attr('transform', "translate(" + margin + ",0)")
+			        .call(y_axis);
+
+			    //add line of slope 1
+
+			    svg
+			      .append("line")
+			      .attr("x1", x_scale(0))
+			      .attr("y1", y_scale(0))
+			      .attr("x2", x_scale(1))
+			      .attr("y2", y_scale(1))
+			      .style("stroke-width", 1.5)
+			      .attr('stroke-dasharray', '2, 2')
+			      .attr('opacity',0.5)
+			      .attr("stroke", "black");
+
+			    //add data bubbles
+
+			    var bubbles = svg.selectAll('circle')
+			    	.data(data)
+			    	.enter()
+			    	.append('circle')
+				    	.attr('cx', function(d) {return x_scale(d.ImpliedWinP);})
+				    	.attr('cy', function(d) {return y_scale(d.ImpliedWinP);})
+				    	.attr('fill', 'green')
+				   	.on("mouseover", function(d,i) {
+				   		tooltip.select('.explain')
+                            .html("Implied: "+Math.round(d.ImpliedWinP*100)+"%<br>Actual: "+Math.round(d.WinP*100)+"%"+
+                            		"<br># Games: "+d.Games);
+                        tooltip.style("left", (d3.event.pageX + 10) + "px");
+                        tooltip.style("top", (d3.event.pageY) + "px");
+                        tooltip.style('display','block');
+                        svg
+                        	.append('line')
+                        	.attr('class', 'tooltipline')
+                        	.attr('x1', x_scale(d.ImpliedWinP))
+                        	.attr('x2', x_scale(d.ImpliedWinP))
+                        	.attr('y1', y_scale(d.WinP))
+                        	.attr('y2', y_scale(0))
+                        	.attr('stroke-dasharray', '3, 3')
+                        	.style('stroke-width', 1)
+                        	.attr('stroke', 'green');
+                       	svg
+                       		.append('line')
+                       		.attr('class', 'tooltipline')
+                       		.attr('x1', x_scale(0))
+                        	.attr('x2', x_scale(d.ImpliedWinP))
+                        	.attr('y1', y_scale(d.WinP))
+                        	.attr('y2', y_scale(d.WinP))
+                        	.attr('stroke-dasharray', '3, 3')
+                        	.style('stroke-width', 1)
+                        	.attr('stroke', 'green');
+				   	})
+				   	.on('mouseout', function(d,i) {
+				   		tooltip.style('display','none');
+				   		d3.selectAll(".tooltipline")
+				   			.style('display', 'none');
+				   	});
+
+				bubbles
+					.transition()
+					.duration(1500)
+					.delay(200)
+					.attr('cy', function(d) {return y_scale(d.WinP);})
+					.attr('r', function(d) {return r_scale(d.Games);});
+
+			    //add axis labels
+
+			    svg
+			    	.append('text')
+					.attr('class', 'label')
+					.attr('id', 'x-label')
+					.attr('x', x_scale((x_extent[0]+x_extent[1])*0.35))
+					.attr('y', y_scale(y_extent[0]-0.1))
+					.text("Implied Win Probability by Moneyline");
+
+			    svg
+			    	.append('text')
+			    	.attr('class','label')
+			    	.attr('id','y-label')
+			    	.attr('x',0).attr('y',0)
+			    	.attr('transform', 'translate(' + x_scale(-0.05) + "," + y_scale((y_extent[0]+y_extent[1])*0.35) + "), rotate(-90)")
+			    	.text("Actual Win Probability");
+
+			    //title
+			    svg
+			      .append('text')
+			      .attr('class', 'heading')
+			      .attr('x', width/2)
+			      .attr('y', margin/2)
+			      .attr('text-anchor', 'middle')
+			      .text("Win Probability, Actual vs Moneyline Implication");
+
+			    //legend
+
+			    svg.append('text')
+			    	.attr('class', 'lineexplain')
+			    	.attr('x', x_scale(0.05))
+			    	.attr('y', y_scale(0.9))
+			    	.text("Above line = public profits");
+
+			   	svg.append('text')
+			    	.attr('class', 'lineexplain')
+			    	.attr('x', x_scale(0.7))
+			    	.attr('y', y_scale(0.1))
+			    	.text("Below line = oddsmakers profit");
+
+			    svg
+			   		.append('line')
+			   		.attr('x1', x_scale(0.75))
+			   		.attr('x2', x_scale(0.8))
+			   		.attr('y1', y_scale(-0.15))
+			   		.attr('y2', y_scale(-0.15))
+			   		.style("stroke-width", 1.5)
+				    .attr('stroke-dasharray', '2, 2')
+				    .attr('opacity',1)
+				    .attr("stroke", "black");
+
+			   	svg
+			   		.append('text')
+			   		.attr('class', 'legendexplain')
+			   		.attr('x', x_scale(0.82))
+			    	.attr('y', y_scale(-0.16))
+			    	.text("'Ideal' line, actual=implied");
+
+			   	svg
+			   		.append('circle')
+			   		.attr('cx', x_scale(0.05))
+			   		.attr('cy', y_scale(-0.15))
+			   		.attr('r', 6)
+			   		.attr('fill', 'green');
+
+			   	svg
+			   		.append('text')
+			   		.attr('class', 'legendexplain')
+			   		.attr('x', x_scale(0.07))
+			    	.attr('y', y_scale(-0.16))
+			    	.text("Size: # Games");
+
+			    //build story container
+
+			    d3.select("#vizstory").remove();
+
+			    d3.select("#storycontainer")
+			    	.append('p')
+			    	.attr('id', "vizstory")
+			    	.style('font-size', '12.5px')
+			    	.text("Here we see the actual win probability of a team, given their money line. The dotted line shows where the \
+			    		bubbles 'should' be, where they would be if the game was fair. As we can see, most of the bigger bubbles \
+			    		(which indicate more games, and therefore more bets) are under the line, where the oddsmakers' win. Most of \
+			    		the bubbles that are above the line are actually at the extremes, with the big favourites and big underdogs. \
+			    		Looks like if you want to take the money line, you'll have to risk it with the long-shots, or chip away with \
+			    		big favourites and small profits. Let's move to the next bet type: the spread.");
+			}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			//drawViz3 function
+			function drawViz3(data) {
+				"use strict";
+
+			    //clear svg
+			    d3.selectAll("svg").remove();
+
+			    //add tooltip div
+			    d3.selectAll(".tooltip").remove();
+			    var tooltip = d3.select('#maincontainer')
+			        .append('div')
+			        .attr('class', 'tooltip');
+
+			    tooltip.append('div').attr('class','explain');
+
+			    var explainStart = "When the majority of the public (>50%) bets on the team ";
+			    var ODparen = " (as measured by points scored, starting from Week 6)";
+			    var explanations = [
+			        explainStart.concat("that is playing on the road"),
+			        explainStart.concat("that is playing at home"),
+			        explainStart.concat("that is the underdog"),
+			        explainStart.concat("that is the favorite"),
+			        explainStart.concat("that has the better offense").concat(ODparen),
+			        explainStart.concat("that has the worse offense").concat(ODparen),
+			        explainStart.concat("that has the better defense").concat(ODparen),
+			        explainStart.concat("that has the worse defense").concat(ODparen)
+			    ];
+
+			    //build story container
+
+			    d3.select("#vizstory").remove();
+
+			    d3.select("#storycontainer")
+			        .append('p')
+			        .attr('id', "vizstory")
+			        .text("This visualization breaks down the oddsmakers profits by the decisions the bettors made on ATS bets:\
+			        		whether they sided with the home team, or the favorite, and so on.\
+			        		It should be noted that this is being viewed from the perspective of the oddsmakers; that is, a higher\
+			        		bar means more profit for the oddsmakers, and more money lost by the public. You can filter\
+			        		the data by season and by team at the bottom of the screen.");
+
+				//change necessary data types
+				data.Season = +data.Season;
+				data.PtsW = +data.PtsW;
+				data.PtsL = +data.PtsL;
+				data.Spread = +data.Spread;
+				data.ATS = +data.ATS;
+				data.PublicNetATS = +data.PublicNetATS;
+
+			    //add filters
+
+			    d3.select(".filters").remove();
+
+			    d3.select("#viznavcontainer").append('div').attr('class', 'filters');
+
+			    d3.select('.filters').append('p').text('Filter by:')
+			        .attr('id', 'filtersectionlabel');
+
+			    //season filter
+			    var seasonDropDown = d3.select(".filters").append("select")
+			                    .attr("name", "Years")
+			                    .attr('id', 'seasonfilter');
+
+			    d3.select('.filters').append("p").text("Season")
+			        .attr('id','seasonfilterlabel')
+			        .style('left', d3.select("#seasonfilter").style("left"));
+
+			    var seasonOptionsData = d3.map(data, function(d) {return d.Season;}).keys();
+			    seasonOptionsData.unshift("Any");
+
+			    var seasonOptions = seasonDropDown.selectAll("option")
+			        .data(seasonOptionsData)
+			        .enter()
+			        .append("option");
+			    seasonOptions.text(function(d) { return d;})
+			       .attr("value", function(d) { return d;});
+
+			    //team filter
+			    var teamDropDown = d3.select(".filters").append("select")
+			                    .attr("name", "Teams")
+			                    .attr('id', 'teamfilter');
+
+			    d3.select('.filters').append("p").text("Team Involved")
+			        .attr('id','teamfilterlabel')
+			        .style('left', d3.select("#teamfilter").style("left"));
+
+			    var teamOptionsData = d3.map(data, function(d) {return d.Home;}).keys();
+			    teamOptionsData.unshift("Any");
+
+			    var teamOptions = teamDropDown.selectAll("option")
+			        .data(teamOptionsData)
+			        .enter()
+			        .append('option');
+			    teamOptions.text(function(d) {return d;})
+			        .attr('value', function(d) {return d;});
+
+			    //first construction
+			    updateChart(data);
+
+				d3.select("#seasonfilter")
+			        .on('change', function() {
+			        	var selectedSeason = d3.select('#seasonfilter').node().value;
+			            var selectedTeam = d3.select("#teamfilter").node().value;
+			            var filtereddata = data.filter(function(d) {
+			            	if(selectedSeason==="Any" && selectedTeam==="Any") {
+			            		return d;
+			            	} else if(selectedSeason==="Any" && selectedTeam!=="Any") {
+			            		return (d.Home===selectedTeam || d.Away===selectedTeam);
+			            	} else if(selectedSeason!=="Any" && selectedTeam==="Any") {
+			            		return d.Season===selectedSeason;
+			            	} else {
+			            		return (d.Home===selectedTeam || d.Away===selectedTeam) && d.Season===selectedSeason;
+			            	}
+			            });
+			            updateChart(filtereddata);
+			        });
+
+			    d3.select("#teamfilter")
+			        .on('change', function() {
+			        	var selectedSeason = d3.select('#seasonfilter').node().value;
+			            var selectedTeam = d3.select("#teamfilter").node().value;
+			            var filtereddata = data.filter(function(d) {
+			            	if(selectedSeason==="Any" && selectedTeam==="Any") {
+			            		return d;
+			            	} else if(selectedSeason==="Any" && selectedTeam!=="Any") {
+			            		return (d.Home===selectedTeam || d.Away===selectedTeam);
+			            	} else if(selectedSeason!=="Any" && selectedTeam==="Any") {
+			            		return d.Season===selectedSeason;
+			            	} else {
+			            		return (d.Home===selectedTeam || d.Away===selectedTeam) && d.Season===selectedSeason;
+			            	}
+			            });
+			            updateChart(filtereddata);
+			        });
+
+			    //actual chart constructing function
+			    function updateChart(newdata) {
+			        //clear svg
+			        d3.selectAll("svg").remove();
+
+			    	//aggregate data into more usable dataframe (folded)
+			    	function getnet(d) {
+			    		return -d.PublicNetATS;
+			    	}
+
+			    	function getlength_mean(d) {
+						return {
+							Val: d3.mean(d, getnet),
+							N: d.length
+						};
+			    	}
+
+			    	function addBackZeros(splitObj, sortorderObj) {
+			    		var newSplitObj = splitObj;
+			    		var presentKeys = newSplitObj.map(function(d) {return d.key;});
+			    		var missingKeys = sortorderObj.filter(function(d) {return presentKeys.indexOf(d)===-1;});
+			    		for(var i=0; i<missingKeys.length; i++) {
+			    			var newkey = missingKeys[i];
+			    			var newobj = {
+			    				key: newkey,
+			    				values: {Val: 0, N: 0}
+			    			}
+			    			newSplitObj.push(newobj);
+			    		}
+			    		return newSplitObj;
+			    	}
+
+			    	var startWeek = 6;
+
+			    	var sortorder1 = ['Away','Home'];
+
+			    	var HRsplit = d3.nest()
+			    					.key(function(d) {
+			    						if(d.Home===d.ATSteam) {
+			    							return 'Home';
+			    						} else {
+			    							return 'Away';
+			    						};})
+			    					.sortKeys(function(a,b) {return sortorder1.indexOf(a) - sortorder1.indexOf(b)})
+			    					.rollup(getlength_mean)
+			    					.entries(newdata);
+
+			    	HRsplit = addBackZeros(HRsplit, sortorder1);
+
+			    	var sortorder2 = ['Underdog','Favorite'];
+
+			    	var LayTakeSplit = d3.nest()
+			    						.key(function(d) {
+			    							if(d.Favorite=="PickEm") {}
+			    							if(d.Favorite===d.ATSteam) {
+			    								return "Favorite";
+			    							} else {
+			    								return "Underdog";
+			    							};})
+			    						.sortKeys(function(a,b) {return sortorder2.indexOf(a) - sortorder2.indexOf(b)})
+			    						.rollup(getlength_mean)
+			    						.entries(newdata);
+
+			    	LayTakeSplit = addBackZeros(LayTakeSplit, sortorder2);
+
+			    	var sortorder3 = ['BetterO','WorseO'];
+
+			    	var OffSplit = d3.nest()
+			    						.key(function(d) {
+			    							if(d.ATSteam===d.Home) {
+			    								if(d.HomePtsFor>=d.AwayPtsFor) {
+			    									return "BetterO";
+			    								} else {
+			    									return "WorseO";
+			    								}
+			    							} else {
+			    								if(d.HomePtsFor<d.AwayPtsFor) {
+			    									return "BetterO";
+			    								} else {
+			    									return "WorseO";
+			    								}
+			    							}
+			    						})
+			    						.sortKeys(function(a,b) {return sortorder3.indexOf(a) - sortorder3.indexOf(b)})
+			    						.rollup(getlength_mean)
+			    						.entries(newdata.filter(function(d) {return d.Week>=startWeek;}));
+
+			    	OffSplit = addBackZeros(OffSplit, sortorder3);
+
+			    	var sortorder4 = ['BetterD','WorseD'];
+
+			    	var DefSplit = d3.nest()
+			    						.key(function(d) {
+			    							if(d.ATSteam===d.Home) {
+			    								if(d.HomePtsAgt<=d.AwayPtsAgt) {
+			    									return "BetterD";
+			    								} else {
+			    									return "WorseD";
+			    								}
+			    							} else {
+			    								if(d.HomePtsAgt>=d.AwayPtsAgt) {
+			    									return "BetterD";
+			    								} else {
+			    									return "WorseD";
+			    								}
+			    							}
+			    						})
+			    						.sortKeys(function(a,b) {return sortorder4.indexOf(a) - sortorder4.indexOf(b)})
+			    						.rollup(getlength_mean)
+			    						.entries(newdata.filter(function(d) {return d.Week>=startWeek;}));
+
+			    	DefSplit = addBackZeros(DefSplit, sortorder4);
+
+			        var alldata = [];
+
+			        [HRsplit,LayTakeSplit,OffSplit,DefSplit].forEach(function(d) {
+			        	var totalN = d[0].values.N + d[1].values.N;
+			            d.forEach(function(k) {
+			                var newObj = {group: k.key, ats: k.values.Val, n: k.values.N, n_prop: k.values.N / totalN};
+			                alldata.push(newObj);
+			            });});
+
+			    	//setup margins and width/height
+			    	var margin = 100;
+			    	var width = 900 - margin;
+			    	var height = 500 - margin;
+
+			    	//construct svg
+			    	var svg = d3.select("#vizcontainer")
+			            .append("svg")
+			            .attr("width", width + margin)
+			            .attr("height", height + margin)
+			            .attr('x', 0)
+			            .attr('y', 0)
+			            .append('g');
+
+			        //y axis
+
+			        var y_extent = [d3.min(alldata, function(d) {
+							        	if(d.ats<0) {
+							        		return d.ats-0.02;
+							        	} else {
+							        		return 0;
+							        	}}),
+			        				d3.max(alldata, function(d) {return d.ats;})+0.02];
+
+			        var y_scale = d3.scale.linear()
+			            .range([height, margin])
+			            .domain(y_extent);
+
+			        var y_axis = d3.svg.axis()
+			            .scale(y_scale)
+			            .orient("left");
+
+			        svg
+			            .append('g')
+			            .attr('class', 'y axis')
+			            .attr('transform', "translate(" + margin + ",0)")
+			            .call(y_axis);
+
+			        //if y-axis has 0 on it, put a dotted line there for visual reference
+			        if(0>y_extent[0]) {
+			            svg
+			              .append("line")
+			              .attr("x1", margin)
+			              .attr("y1", y_scale(0))
+			              .attr("x2", width)
+			              .attr("y2", y_scale(0))
+			              .style("stroke-width", 1)
+			              .attr('opacity',0.5)
+			              .attr("stroke", "black")
+			              .style("stroke-dasharray", "3,3");
+			        };
+
+			        //x "axis" starting points
+
+			        //domain of 1,2,3,4 because there are 4 stats to be plotted, with even spacing
+			        var x_scale = d3.scale.linear()
+			       		.range([margin, width])
+			       		.domain([0, 4]);
+
+			        //data bar width
+			        var bw = 30;
+
+			        var xs = [0.5, 0.5, 1.5, 1.5, 2.5, 2.5, 3.5, 3.5];
+			        var groupinds = [0,1,0,1,0,1,0,1];
+			        var groupnums = [0,0,1,1,2,2,3,3];
+
+			        var groupnamescolors = [
+			            ['Location', 'blue'],
+			            ['Spread', 'green'],
+			            ['Offense', 'red'],
+			            ['Defense', 'purple']
+			        ];
+
+			        var opac_extent = [0, 1];
+
+			        var opac_scale = d3.scale.linear()
+		        					.range([0.5, 1])
+		        					.domain(opac_extent);
+
+			        var allbars = svg
+			                        .selectAll(".bar")
+			                        .data(alldata)
+			                        .enter()
+			                        .append('rect')
+			                        .attr('class', 'bar')
+			                        .attr('x',0).attr('y',0)
+			                        .attr('transform', function(d,i) {
+			                        	if(d.ats>=0) {
+				                            return 'translate('+
+				                                (x_scale(xs[i]) + (groupinds[i]*(bw+3)))
+				                                +','+
+				                                y_scale(0)
+				                                +') rotate(180)';
+			                    		} else {
+			                    			return 'translate('+
+				                                (x_scale(xs[i]) + (groupinds[i]*(bw+3))-bw)
+				                                +','+
+				                                y_scale(0)
+				                                +')';
+			                    		}
+			                    	})
+			                        .attr('width',bw)
+			                        .attr('height', 0)
+			                        .attr('fill', function(d, i) {
+			                        	return groupnamescolors[groupnums[i]][1];})
+			                        .attr('opacity', function(d) {return opac_scale(d.n_prop);})
+			                        .on("mouseover", function(d, i) {
+			                            d3.select(this).style("fill", "grey");
+			                            tooltip.select('.explain')
+			                                .html("Average loss: $" + (Math.round(d.ats*1000)/1000) +
+			                                    "<br>" + explanations[i] + "<br>" +
+			                                    "<strong>" + d.n + " observations" + "</strong>");
+			                            tooltip.style("left", (d3.event.pageX + bw) + "px")
+			                            tooltip.style("top", (d3.event.pageY) + "px")
+			                            tooltip.style('display','block');
+			                        })
+			                        .on("mouseout", function(d,i) {
+			                            var color = groupnamescolors[groupnums[i]][1];
+			                            d3.select(this).style('fill',color);
+			                            tooltip.style('display','none');
+			                        });
+
+			        var trans_scale = d3.scale.linear()
+			                            .domain(y_extent)
+			                            .range([1000,2500]);
+
+			        allbars.transition()
+			            .duration(function(d) {return trans_scale(d.ats)})
+			            .delay(100)
+			            .attr("height", function(d) {
+			            	if(d.n===0) {
+			            		return 0;
+			            	} else if(d.ats>=0) {
+			            		return y_scale(0)-y_scale(d.ats);
+			            	} else {
+			            		return y_scale(d.ats)-y_scale(0);
+			            	}
+			            });
+
+			        var singleLabels = svg
+			        				.selectAll(".xsinglelabs")
+			        				.data(alldata)
+			        				.enter()
+			        				.append('text')
+			        				.attr('class', 'xsinglelabs')
+			        				.attr('x',0).attr('y',0)
+			        				.attr('transform', function(d,i) {
+			        					return 'translate('+
+			    						(x_scale(xs[i]) + (groupinds[i]*(bw+3)) - bw)
+			        					+', ' +
+			        					(y_scale(y_extent[0])+10)
+			        					+
+			        					') rotate(45)'})
+			        				.text(function(d) {return d.group;});
+
+			        xs = [0.5, 1.5, 2.5, 3.5];
+
+			        var groupLabels = svg
+			        					.selectAll(".xgrouplabs")
+			        					.data(groupnamescolors)
+			        					.enter()
+			        					.append('text')
+			        					.attr('class', 'xgrouplabs')
+			        					.attr('x', function(d,i) {return x_scale(0.5+i)-bw})
+			        					.attr('y', y_scale(y_extent[0])+70)
+			        					.attr('color', function(d) {return d[1]})
+			        					.text(function(d) {return d[0]});
+
+			        svg
+			        	.append('rect')
+			        	.attr('x', x_scale(0.5))
+			        	.attr('y', y_scale(y_extent[1])-25)
+			        	.attr('height', 10)
+			        	.attr('width', 25)
+			        	.attr('fill', 'black')
+			        	.attr('opacity', 0.5);
+
+			        svg
+			        	.append('text')
+			        	.attr('x', x_scale(0.5)+30)
+			        	.attr('y', y_scale(y_extent[1])-15)
+			        	.text('opacity: % of bets in subgroup');
+
+			        //add y-axis label
+			        svg
+			    	.append('text')
+			    	.attr('class','label')
+			    	.attr('id','y-label')
+			    	.attr('x',0).attr('y',0)
+			    	.attr('transform', 'translate(' + x_scale(-0.3) + "," +
+			    		y_scale(y_extent[0]+((Math.abs(y_extent[0])+Math.abs(y_extent[1]))*0.2)) + "), rotate(-90)")
+			    	.text("Oddsmakers' Profit in Dollars");
+
+			        //add title
+			        svg
+			          .append('text')
+			          .attr('class', 'heading')
+			          .attr('x', width/2)
+			          .attr('y', margin/2)
+			          .attr('text-anchor', 'middle')
+			          .text("ATS: Oddsmakers' Profit per $1 Bet When Majority Bets On...");
+			    }
+			}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			//drawViz4 function
+			function drawViz4(data) {
+				"use strict";
+
+			    //clear svg
+			    d3.selectAll("svg").remove();
+
+			    //add tooltip div
+			    d3.selectAll(".tooltip").remove();
+			    var tooltip = d3.select('#maincontainer')
+			        .append('div')
+			        .attr('class', 'tooltip');
+
+			    tooltip.append('div').attr('class','explain');
+
+			    var explainStart = "When the majority of the public (>50%) ";
+
+			    var ppgMid = " when the total points-per-game between the 2 teams from weeks prior ";
+			    var ppgEnd = " (starting from Week 6)";
+
+			    var explanations = [
+			        explainStart.concat("takes the Over"),
+			        explainStart.concat("takes the Under"),
+			        explainStart.concat("takes the Over in Prime Time games (the nationally televised nighttime games)"),
+			        explainStart.concat("takes the Under in Prime Time games (the nationally televised nighttime games)"),
+			        explainStart.concat("takes the <strong>Over</strong>").concat(ppgMid)
+			                           .concat("is <strong>greater than</strong> the line").concat(ppgEnd),
+			        explainStart.concat("takes the <strong>Under</strong>").concat(ppgMid)
+			                            .concat("is <strong>greater than</strong> the line").concat(ppgEnd),
+			        explainStart.concat("takes the <strong>Over</strong>").concat(ppgMid)
+			                            .concat("is <strong>less than</strong> the line").concat(ppgEnd),
+			        explainStart.concat("takes the <strong>Under</strong>").concat(ppgMid)
+			                            .concat("is <strong>less than</strong> the line").concat(ppgEnd)
+			    ];
+
+			    //build story container
+
+			    d3.select("#vizstory").remove();
+
+			    d3.select("#storycontainer")
+			        .append('p')
+			        .attr('id', "vizstory")
+			        .style("font-size", "14.5px")
+			        .text("This final visualization shows a breakdown of the oddsmakers profits on over and under bets in\
+			        		all games, primetime games, games where the teams' offenses were better than the line suggested,\
+			        		and games where they were worse. As before, the perspective is the oddsmakers', and\
+			        		you can filter the data by season and team at the bottom of the screen. Note: you may notice, when\
+			        		using both filters, that some bars disappear for the Under group; this is due to the lack of overall\
+			        		bets on the under; these subsets simply have 0 observations.");
+
+				//change necessary data types
+				data.Season = +data.Season;
+				data.PtsW = +data.PtsW;
+				data.PtsL = +data.PtsL;
+				data.Total = +data.Total;
+				data.TOT = +data.TOT;
+			    data.TOTside = +data.TOTside;
+				data.PublicNetTOT = +data.PublicNetTOT;
+			    data.HomePtsFor = data.HomePtsFor;
+			    data.AwayPtsFor = data.AwayPtsFor;
+
+			    //add filters
+
+			    d3.select(".filters").remove();
+
+			    d3.select("#viznavcontainer").append('div').attr('class', 'filters');
+
+			    d3.select('.filters').append('p').text('Filter by:')
+			        .attr('id', 'filtersectionlabel');
+
+			    //season filter
+			    var seasonDropDown = d3.select(".filters").append("select")
+			                    .attr("name", "Years")
+			                    .attr('id', 'seasonfilter');
+
+			    d3.select('.filters').append("p").text("Season")
+			        .attr('id','seasonfilterlabel')
+			        .style('left', d3.select("#seasonfilter").style("left"));
+
+			    var seasonOptionsData = d3.map(data, function(d) {return d.Season;}).keys();
+			    seasonOptionsData.unshift("Any");
+
+			    var seasonOptions = seasonDropDown.selectAll("option")
+			        .data(seasonOptionsData)
+			        .enter()
+			        .append("option");
+			    seasonOptions.text(function(d) { return d;})
+			       .attr("value", function(d) { return d;});
+
+			    //team filter
+			    var teamDropDown = d3.select(".filters").append("select")
+			                    .attr("name", "Teams")
+			                    .attr('id', 'teamfilter');
+
+			    d3.select('.filters').append("p").text("Team Involved")
+			        .attr('id','teamfilterlabel')
+			        .style('left', d3.select("#teamfilter").style("left"));
+
+			    var teamOptionsData = d3.map(data, function(d) {return d.Home;}).keys();
+			    teamOptionsData.unshift("Any");
+
+			    var teamOptions = teamDropDown.selectAll("option")
+			        .data(teamOptionsData)
+			        .enter()
+			        .append('option');
+			    teamOptions.text(function(d) {return d;})
+			        .attr('value', function(d) {return d;});
+
+			    //first construction
+			    updateChart(data);
+
+			    //when filter is used, data changes
+			    d3.select("#seasonfilter")
+			        .on('change', function() {
+			            var selectedSeason = d3.select('#seasonfilter').node().value;
+			            var selectedTeam = d3.select("#teamfilter").node().value;
+			            var filtereddata = data.filter(function(d) {
+			            	if(selectedSeason==="Any" && selectedTeam==="Any") {
+			            		return d;
+			            	} else if(selectedSeason==="Any" && selectedTeam!=="Any") {
+			            		return (d.Home===selectedTeam || d.Away===selectedTeam);
+			            	} else if(selectedSeason!=="Any" && selectedTeam==="Any") {
+			            		return d.Season===selectedSeason;
+			            	} else {
+			            		return (d.Home===selectedTeam || d.Away===selectedTeam) && d.Season===selectedSeason;
+			            	}
+			            });
+			            updateChart(filtereddata);
+			        });
+
+			    d3.select("#teamfilter")
+			        .on('change', function() {
+			        	var selectedSeason = d3.select('#seasonfilter').node().value;
+			            var selectedTeam = d3.select("#teamfilter").node().value;
+			            var filtereddata = data.filter(function(d) {
+			            	if(selectedSeason==="Any" && selectedTeam==="Any") {
+			            		return d;
+			            	} else if(selectedSeason==="Any" && selectedTeam!=="Any") {
+			            		return (d.Home===selectedTeam || d.Away===selectedTeam);
+			            	} else if(selectedSeason!=="Any" && selectedTeam==="Any") {
+			            		return d.Season===selectedSeason;
+			            	} else {
+			            		return (d.Home===selectedTeam || d.Away===selectedTeam) && d.Season===selectedSeason;
+			            	}
+			            })
+			            updateChart(filtereddata);
+			        });
+
+			    //actual chart constructing function
+			    function updateChart(newdata) {
+			        //clear svg
+			        d3.selectAll("svg").remove();
+
+			    	//aggregate data into more usable dataframe (folded)
+			    	function getnet(d) {
+			    		return -d.PublicNetTOT;
+			    	}
+
+			        function getside(d) {
+			            if(parseInt(d.TOTside)==1) {
+			                return 'Over';
+			            } else {
+			                return 'Under';
+			            }
+			        }
+
+			    	function getlength_mean(d) {
+						return {
+							Val: d3.mean(d, getnet),
+							N: d.length
+						};
+			    	}
+
+			    	function addBackZeros(splitObj, sortorderObj) {
+			    		var newSplitObj = splitObj;
+			    		var presentKeys = newSplitObj.map(function(d) {return d.key;});
+			    		var missingKeys = sortorderObj.filter(function(d) {return presentKeys.indexOf(d)===-1;});
+			    		for(var i=0; i<missingKeys.length; i++) {
+			    			var newkey = missingKeys[i];
+			    			var newobj = {
+			    				key: newkey,
+			    				values: {Val: 0, N: 0}
+			    			}
+			    			newSplitObj.push(newobj);
+			    		}
+			    		return newSplitObj;
+			    	}
+
+			        var startWeek = 6;
+
+			    	var sortorder = ['Over','Under'];
+
+			    	var OUsplit = d3.nest()
+			    					.key(getside)
+			    					.sortKeys(function(a,b) {return sortorder.indexOf(a) - sortorder.indexOf(b)})
+			    					.rollup(getlength_mean)
+			    					.entries(newdata);
+
+			    	OUsplit = addBackZeros(OUsplit, sortorder);
+
+			    	var PrimeSplit = d3.nest()
+			    						.key(getside)
+			    						.sortKeys(function(a,b) {return sortorder.indexOf(a) - sortorder.indexOf(b)})
+			    						.rollup(getlength_mean)
+			    						.entries(newdata.filter(function(d) {
+			                                return parseInt(d.Prime)===1;
+			                            }));
+
+			    	PrimeSplit = addBackZeros(PrimeSplit, sortorder);
+
+			    	var PPGoverSplit = d3.nest()
+			                            .key(getside)
+			    						.sortKeys(function(a,b) {return sortorder.indexOf(a) - sortorder.indexOf(b)})
+			    						.rollup(getlength_mean)
+			    						.entries(newdata.filter(function(d) {
+			                                return d.Week>=startWeek && (parseInt(d.HomePtsFor)+parseInt(d.AwayPtsFor))>=d.Total;
+			                            }));
+
+			    	PPGoverSplit = addBackZeros(PPGoverSplit, sortorder);
+
+			    	var PPGunderSplit = d3.nest()
+			    						.key(getside)
+			    						.sortKeys(function(a,b) {return sortorder.indexOf(a) - sortorder.indexOf(b)})
+			    						.rollup(getlength_mean)
+			    						.entries(newdata.filter(function(d) {
+			                                return d.Week>=startWeek && (parseInt(d.HomePtsFor)+parseInt(d.AwayPtsFor))<d.Total;
+			                            }));
+
+			    	PPGunderSplit = addBackZeros(PPGunderSplit, sortorder);
+
+			        var alldata = [];
+
+			        [OUsplit,PrimeSplit,PPGoverSplit,PPGunderSplit].forEach(function(d) {
+			        	var totalN = d[0].values.N + d[1].values.N;
+			            d.forEach(function(k) {
+			                var newObj = {group: k.key, tot: k.values.Val, n: k.values.N, n_prop: k.values.N / totalN};
+			                alldata.push(newObj);
+			            });});
+
+			    	//setup margins and width/height
+			    	var margin = 100;
+			    	var width = 900 - margin;
+			    	var height = 500 - margin;
+
+			    	//construct svg
+			    	var svg = d3.select("#vizcontainer")
+			            .append("svg")
+			            .attr("width", width + margin)
+			            .attr("height", height + margin)
+			            .attr('x', 0)
+			            .attr('y', 0)
+			            .append('g');
+
+			        //y axis
+
+			        var y_extent = [d3.min(alldata, function(d) {
+							        	if(d.tot<0) {
+							        		return d.tot-0.02;
+							        	} else {
+							        		return 0;
+							        	}}),
+			        				d3.max(alldata, function(d) {return d.tot;})+0.02];
+
+			        var y_scale = d3.scale.linear()
+			            .range([height, margin])
+			            .domain(y_extent);
+
+			        var y_axis = d3.svg.axis()
+			            .scale(y_scale)
+			            .orient("left");
+
+			        svg
+			            .append('g')
+			            .attr('class', 'y axis')
+			            .attr('transform', "translate(" + margin + ",0)")
+			            .call(y_axis);
+
+			        //x "axis" starting points
+
+			        //domain of 1,2,3,4 because there are 4 stats to be plotted, with even spacing
+			        var x_scale = d3.scale.linear()
+			       		.range([margin, width])
+			       		.domain([0, 4]);
+
+			        //data bar width
+			        var bw = 30;
+
+			        var xs = [0.5, 0.5, 1.5, 1.5, 2.5, 2.5, 3.5, 3.5];
+			        var groupinds = [0,1,0,1,0,1,0,1];
+			        var groupnums = [0,0,1,1,2,2,3,3];
+
+			        var groupnamescolors = [
+			            ['All Games', 'blue'],
+			            ['Prime Time', 'green'],
+			            ['Pts/Game > Line', 'red'],
+			            ['Pts/Game < Line', 'purple']
+			        ];
+
+			        var opac_extent = [0, 1];
+
+			        var opac_scale = d3.scale.linear()
+		        					.range([0.5, 1])
+		        					.domain(opac_extent);
+
+			        var allbars = svg
+			                        .selectAll(".bar")
+			                        .data(alldata)
+			                        .enter()
+			                        .append('rect')
+			                        .attr('class', 'bar')
+			                        .attr('x',0).attr('y',0)
+			                        .attr('transform', function(d,i) {
+			                            return 'translate('+
+			                                (x_scale(xs[i]) + (groupinds[i]*(bw+3)))
+			                                +','+
+			                                y_scale(y_extent[0])
+			                                +') rotate(180)'})
+			                        .attr('width',bw)
+			                        .attr('height', 0)
+			                        .attr('fill', function(d, i) {
+			                        	return groupnamescolors[groupnums[i]][1];})
+			                        .attr('opacity', function(d) {return opac_scale(d.n_prop);})
+			                        .on("mouseover", function(d,i) {
+			                            d3.select(this).style("fill", "grey");
+			                            tooltip.select('.explain')
+			                                .html("Average loss: $" + (Math.round(d.tot*1000)/1000) +
+			                                    "<br>" + explanations[i] + "<br>" +
+			                                    "<strong>"+d.n + " observations"+"</strong>");
+			                            tooltip.style("left", (d3.event.pageX + bw) + "px")
+			                            tooltip.style("top", (d3.event.pageY) + "px")
+			                            tooltip.style('display','block');
+			                        })
+			                        .on("mouseout", function(d,i) {
+			                            var color = groupnamescolors[groupnums[i]][1];
+			                            d3.select(this).style('fill',color);
+			                            tooltip.style('display','none');
+			                        });
+
+			        var trans_scale = d3.scale.linear()
+			                            .domain(y_extent)
+			                            .range([1000,2500]);
+
+			        allbars.transition()
+			            .duration(function(d) {return trans_scale(d.tot)})
+			            .delay(100)
+			            .attr("height", function(d) {
+			            	if(d.n===0) {
+			            		return 0;
+			            	} else {
+			            		return y_scale(y_extent[0])-y_scale(d.tot);
+			            	}
+			            });
+
+			        var singleLabels = svg
+			        				.selectAll(".xsinglelabs")
+			        				.data(alldata)
+			        				.enter()
+			        				.append('text')
+			        				.attr('class', 'xsinglelabs')
+			        				.attr('x',0).attr('y',0)
+			        				.attr('transform', function(d,i) {
+			        					return 'translate('+
+			    						(x_scale(xs[i]) + (groupinds[i]*(bw+3)) - bw)
+			        					+', ' +
+			        					(y_scale(y_extent[0])+10)
+			        					+
+			        					') rotate(45)'})
+			        				.text(function(d,i) {
+			                            if(i%2===0) {
+			                                return "Over";
+			                            } else {
+			                                return "Under";
+			                            }
+			                        });
+
+			        xs = [0.5, 1.5, 2.5, 3.5];
+
+			        var groupLabels = svg
+			        					.selectAll(".xgrouplabs")
+			        					.data(groupnamescolors)
+			        					.enter()
+			        					.append('text')
+			        					.attr('class', 'xgrouplabs')
+			        					.attr('x', function(d,i) {return x_scale(0.5+i)-bw})
+			        					.attr('y', y_scale(y_extent[0])+70)
+			        					.attr('color', function(d) {return d[1]})
+			        					.text(function(d) {return d[0]});
+
+			        svg
+			        	.append('rect')
+			        	.attr('x', x_scale(0.5))
+			        	.attr('y', y_scale(y_extent[1])-25)
+			        	.attr('height', 10)
+			        	.attr('width', 25)
+			        	.attr('fill', 'black')
+			        	.attr('opacity', 0.5);
+
+			        svg
+			        	.append('text')
+			        	.attr('x', x_scale(0.5)+30)
+			        	.attr('y', y_scale(y_extent[1])-15)
+			        	.text('opacity: % of bets in subgroup');
+
+			        //add y-axis label
+			        svg
+			    	.append('text')
+			    	.attr('class','label')
+			    	.attr('id','y-label')
+			    	.attr('x',0).attr('y',0)
+			    	.attr('transform', 'translate(' + x_scale(-0.3) + "," +
+			    		y_scale(y_extent[0]+((Math.abs(y_extent[0])+Math.abs(y_extent[1]))*0.2)) + "), rotate(-90)")
+			    	.text("Oddsmakers' Profit in Dollars");
+
+			        //add title
+			        svg
+			          .append('text')
+			          .attr('class', 'heading')
+			          .attr('x', width/2)
+			          .attr('y', margin/2)
+			          .attr('text-anchor', 'middle')
+			          .text("Over/Under: Oddsmakers' Profit per $1 Bet When Majority Bets On...");
+			    }
+			}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			drawAnyViz(1);
+			var vizNum = 1;
+
+			//transition functions
+
+			function backButton() {
+				if(vizNum===4) {
+					d3.select("#forwardbutton").style("visibility","visible").style("display","initial");
+					vizNum += -1;
+					drawAnyViz(vizNum);
+				} else if(vizNum===3) {
+					vizNum += -1;
+					drawAnyViz(vizNum);
+				} else if(vizNum===2) {
+					vizNum += -1;
+					drawAnyViz(vizNum);
+					d3.select("#backbutton").style("visibility","hidden");
+				}
+			}
+
+			function forwardButton() {
+				if(vizNum===1) {
+					d3.select("#backbutton").style("visibility","visible").style("display","initial");
+					vizNum += 1;
+					drawAnyViz(vizNum);
+				} else if(vizNum===2) {
+					vizNum += 1;
+					drawAnyViz(vizNum);
+				} else if(vizNum===3) {
+					d3.select("#backbutton").style("visibility","visible").style("display","initial");
+					vizNum += 1;
+					drawAnyViz(vizNum);
+					d3.select("#forwardbutton").style("visibility","hidden");
+				}
+			}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    	</script>
+	</head>
+	<body>
+	    <div id="maincontainer">
+	    	<div id="vizcontainer"></div>
+	    	<div id="viznavcontainer"></div>
+	    </div>
+	    <div id="storycontainer">
+	    	<p id="storyintro">There are 3 main ways to bet on an NFL game: against the
+	    		<a href="http://pregame.com/EN/main/sports-betting-basics/glossary/terms/against-the-spread.html">spread</a>,
+	    		on the <a href="http://pregame.com/EN/main/sports-betting-basics/glossary/terms/money-line.html">money line</a>,
+	    		or on the <a href="http://pregame.com/EN/main/sports-betting-basics/glossary/terms/over-under-total.html">over/under</a>.
+	    		each method is popular in its own right, but let's take a closer look at the outcomes of each over the last few years.
+	    		<br><br>
+	    		<u>The question is:</u><br>
+	    		How can you best win money betting on football? (Or I suppose, how can you lose the least?) <br><br>
+	    		TIP: For the 3rd and 4th charts, hover over the bars for an explanation of the groups.
+	    	</p>
+	    	<p id="navvizsentence">Navigate the 3 visualizations...</p>
+	    	<div id="navbuttons">
+    			<input name="backButton"
+    					id="backbutton"
+    					class="navbuttons"
+           				type="button"
+           				value="Previous"
+						onclick="backButton()" />
+				<input name="forwardButton"
+						id="forwardbutton"
+						class="navbuttons"
+						type="button"
+						value="Next"
+						onclick="forwardButton()" />
+			</div>
+	    </div>
+	</body>
+</html>
