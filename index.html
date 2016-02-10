@@ -16,11 +16,10 @@ body{
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
 <script>
-// try to implement bottom rect
-		var a = parseInt(Math.random() * 100),
-				b = parseInt(Math.random() * 100),
-				c = parseInt(Math.random() * 100),
-				d = parseInt(Math.random() * 100);
+var a = parseInt(Math.random() * 100),
+		b = parseInt(Math.random() * 100),
+		c = parseInt(Math.random() * 100),
+		d = parseInt(Math.random() * 100);
 
 var dataset =[a, b, c, d];
 
@@ -56,19 +55,13 @@ var svg = d3.select("body")
 
 console.log(dataset);
 
-//Draw the Rectangle
+//Draw static Rectangle
 var rectangle = svg.append("rect")
 	.attr("x", 0)
 	.attr("y", h - bottomRectHight)
 	.attr("width", w)
 	.attr("height", bottomRectHight)
 	.attr("fill", "rgb(250, 128, 114)");
-
-
-
-var drawVis = function(){
-	// clear canvas
-	svg.selectAll(".input").remove();
 
 	svg.selectAll(".input")
 		.data(dataset)
@@ -84,18 +77,27 @@ var drawVis = function(){
 		})
 		.attr("width", w / dataset.length - barPadding)
 		.attr("height", y(0))
-		.transition().duration(750).ease("linear")
+		.transition().duration(1750).ease("linear")
 		.attr("y",  function(d) {
 			return y(d);
 		})
 		.attr("height", function(d) {
-			console.log(h - y(d));
-			console.log(this);
 			return h - y(d);
-	})
-}();
+	});
 
-//var updateVis = setInterval(drawVis,2000);
+var updateVis = function(){
+	svg.selectAll(".input")
+	.data(dataset)
+	.transition().duration(1750).ease("linear")
+	.attr("y",  function(d) {
+		return y(d);
+		})
+	.attr("height", function(d) {
+		return h - y(d);
+	});
+};
+var updateLoop = setInterval(updateVis, 2000);
+
 </script>
 
 </body>
