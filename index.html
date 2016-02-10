@@ -17,12 +17,24 @@ body{
 
 <script>
 // try to implement bottom rect
-		a = parseInt(Math.random() * 100),
-		b = parseInt(Math.random() * 100),
-		c = parseInt(Math.random() * 100),
-		d = parseInt(Math.random() * 100);
+		var a = parseInt(Math.random() * 100),
+				b = parseInt(Math.random() * 100),
+				c = parseInt(Math.random() * 100),
+				d = parseInt(Math.random() * 100);
 
 var dataset =[a, b, c, d];
+
+var updateData = function(){
+	a = parseInt(Math.random() * 100),
+	b = parseInt(Math.random() * 100),
+	c = parseInt(Math.random() * 100),
+	d = parseInt(Math.random() * 100);
+	dataset = [a, b, c, d];
+	console.log(dataset);
+};
+
+// simullate live data input
+var update = setInterval(updateData, 1000);
 
 //Width and height
 var windowWidth = $(window).width();
@@ -30,7 +42,7 @@ var windowHeight = $(window).height();
 var w = windowWidth * 98/100;
 var h = windowHeight * 98/100;
 var barPadding = windowWidth * 5/100;
-var bottomRectHight = w * 7/100;
+var bottomRectHight = w * 6/100;
 var y = d3.scale.sqrt()
     .range([h, 0])
 		.domain([0,100]);//since values vary between 0 and 100
@@ -41,7 +53,8 @@ var svg = d3.select("body")
 	.append("svg")
 	.attr("width", w)
 	.attr("height", h);
-console.log(dataset)
+
+console.log(dataset);
 
 //Draw the Rectangle
 var rectangle = svg.append("rect")
@@ -52,27 +65,37 @@ var rectangle = svg.append("rect")
 	.attr("fill", "rgb(250, 128, 114)");
 
 
-svg.selectAll(".input")
-	.data(dataset)
-	.enter()
-	.append("rect")
-	.attr("class", "input")
-	.attr("fill", "rgb(250, 128, 114)")
-	.attr("x", function(d, i) {
-		return i * (w / dataset.length) + 2.5/100 * w;
+
+var drawVis = function(){
+	// clear canvas
+	svg.selectAll(".input").remove();
+
+	svg.selectAll(".input")
+		.data(dataset)
+		.enter()
+		.append("rect")
+		.attr("class", "input")
+		.attr("fill", "rgb(250, 128, 114)")
+		.attr("x", function(d, i) {
+			return i * (w / dataset.length) + 2.5/100 * w;
+		})
+		.attr("y",  function(d) {
+			return h;
+		})
+		.attr("width", w / dataset.length - barPadding)
+		.attr("height", y(0))
+		.transition().duration(750).ease("linear")
+		.attr("y",  function(d) {
+			return y(d);
+		})
+		.attr("height", function(d) {
+			console.log(h - y(d));
+			console.log(this);
+			return h - y(d);
 	})
-	.attr("y",  function(d) {
-		return h;
-	})
-	.attr("width", w / dataset.length - barPadding)
-	.attr("height", y(0))
-	.transition().duration(750).ease("linear")
-	.attr("y",  function(d) {
-		return y(d);
-	})
-	.attr("height", function(d) {
-		return h - y(d);
-});
+}();
+
+//var updateVis = setInterval(drawVis,2000);
 </script>
 
 </body>
