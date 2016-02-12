@@ -43,6 +43,39 @@ function shuffle(array) {
     return array;
 }
 
+// Algorithm to simulate poll
+
+// create inicial random dataset
+var votes = [0, 0, 0, 0];
+var dataset = [0, 0, 0, 0];
+var dataSize = 4;
+var voteRate = 10;
+
+// Algorithm to simulate the further voting process
+var updateData = function() {
+
+  var total = 0;
+  dataset = [0, 0, 0, 0];
+
+  // add random amount of votes
+  for (i = 0; i < dataSize; i++) {
+    var randomVotes = randombetween(0, voteRate);
+    votes[i] += randomVotes;
+    total += votes[i];
+  }
+
+  // calculate percentages
+  for (i = 0; i < dataSize; i++) {
+    dataset[i] = votes[i] / total * 100;
+  }
+
+  voteRate *= 1.2;
+
+  drawVis();
+  $("svg").fadeIn("slow");
+};
+
+/*
 var dataset = [];
 var max = 100;
 var a = randombetween(0, max);
@@ -66,9 +99,9 @@ var updateData = function() {
     drawVis();
     $("svg").fadeIn("slow");
 };
-
+*/
 // simullate live data input
-var update = setInterval(updateData, 2000);
+var update = setInterval(updateData, 750);
 
 //Width and height
 var windowWidth = $(window).width();
@@ -119,14 +152,14 @@ function drawVis() {
         })
         .attr("width", w / dataset.length - barPadding)
         .attr("height", y(0))
-        .transition().duration(1750).ease("linear")
+        .transition().duration(750).ease("linear")
         .attr("y", function(d) {
             return y(d);
         })
         .attr("height", function(d) {
             return h - y(d);
         })
-
+/*
 		var textSel = svg.selectAll("text")
    			.data(dataset);
 
@@ -144,7 +177,7 @@ function drawVis() {
    .attr("y", function(d) {
         return h - (d * 4);
    });
-
+*/
 
 
 }
