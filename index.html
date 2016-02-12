@@ -19,51 +19,52 @@ body{
 <script>
 // helper function to genarate random number in between min-max
 function randombetween(min, max) {
-  return Math.floor(Math.random()*(max-min+1)+min);
+    return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 // helper function to shuffle array
 function shuffle(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
+    var currentIndex = array.length,
+        temporaryValue, randomIndex;
 
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
 
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
 
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
 
-  return array;
+    return array;
 }
 
 var dataset = [];
 var max = 100;
-var a = randombetween(1, max-3);
-var b = randombetween(1, max-2-a);
-var c = randombetween(1, max-1-a-b);
+var a = randombetween(1, max - 3);
+var b = randombetween(1, max - 2 - a);
+var c = randombetween(1, max - 1 - a - b);
 var d = max - a - b - c;
-dataset.push(a,b,c,d);
+dataset.push(a, b, c, d);
 console.log(dataset);
 
 // helper function too simulate live data
-var updateData = function(){
-	dataset = [];
-	a = randombetween(1, max-3);
-	b = randombetween(1, max-2-a);
-	c = randombetween(1, max-1-a-b);
-	d = max - a - b - c;
-  dataset.push(a,b,c,d);
-	shuffle(dataset);
-	console.log(dataset);
+var updateData = function() {
+    dataset = [];
+    a = randombetween(0, max - 3);
+    b = randombetween(0, max - 2 - a);
+    c = randombetween(0, max - 1 - a - b);
+    d = max - a - b - c;
+    dataset.push(a, b, c, d);
+    shuffle(dataset);
+    console.log(dataset);
 
-	drawVis();
-	$( "svg" ).fadeIn( "slow" );
+    drawVis();
+    $("svg").fadeIn("slow");
 };
 
 // simullate live data input
@@ -72,62 +73,81 @@ var update = setInterval(updateData, 2000);
 //Width and height
 var windowWidth = $(window).width();
 var windowHeight = $(window).height();
-var w = windowWidth * 98/100;
-var h = windowHeight * 98/100;
-var barPadding = windowWidth * 2/100;
-var bottomRectHight = w * 6/100;
+var w = windowWidth * 98 / 100;
+var h = windowHeight * 98 / 100;
+var barPadding = windowWidth * 5 / 100;
+var bottomRectHight = w * 6 / 100;
 var y = d3.scale.sqrt()
     .range([h, 0])
-		.domain([0,100]);//since values vary between 0 and 100
+    .domain([0, 100]); //since values vary between 0 and 100
 
 
 //Create SVG element
 var svg = d3.select("body")
-	.append("svg")
-	.attr("width", w)
-	.attr("height", h)
-	.attr("style", "display:none;");
+    .append("svg")
+    .attr("width", w)
+    .attr("height", h)
+    .attr("style", "display:none;");
 
 
-	// create inicial vis
-	function drawVis(){
-
-		//Draw static Rectangle for bottom
-		var rectangle = svg.append("rect")
-			.attr("x", 0)
-			.attr("y", h - bottomRectHight)
-			.attr("width", w)
-			.attr("height", bottomRectHight)
-			.attr("fill", "rgb(250, 128, 114)");
+//Draw static Rectangle for bottom
+var rectangle = svg.append("rect")
+		.attr("x", 0)
+		.attr("y", h - bottomRectHight)
+		.attr("width", w)
+		.attr("height", bottomRectHight)
+		.attr("fill", "rgb(250, 128, 114)");
 
 
-	 var uSel = svg.selectAll(".input")
-			.data(dataset);
+// create inicial vis
+function drawVis() {
 
-	 uSel.exit().remove();
+    var uSel = svg.selectAll(".input")
+        .data(dataset);
 
-	 uSel
+    uSel.exit().remove();
+
+    uSel
+        .enter()
+        .append("rect")
+        .attr("class", "input")
+        .attr("fill", "rgb(250, 128, 114)");
+
+    uSel
+        .attr("x", function(d, i) {
+            return i * (w / dataset.length) + 2.5 / 100 * w;
+        })
+        .attr("width", w / dataset.length - barPadding)
+        .attr("height", y(0))
+        .transition().duration(1750).ease("linear")
+        .attr("y", function(d) {
+            return y(d);
+        })
+        .attr("height", function(d) {
+            return h - y(d);
+        })
+/*
+		var textSel = svg.selectAll("text")
+   			.data(dataset);
+
+		textSel.remove();
+
+		textSel
 			.enter()
-			.append("rect")
-			.attr("class", "input")
-			.attr("fill", "rgb(250, 128, 114)");
-
-	 uSel
+			.append("text")
+			.text(function(d) {
+        return d;
+   		})
 			.attr("x", function(d, i) {
-				return i * (w / dataset.length) + 2.5/100 * w;
-			})
-			.attr("width", w / dataset.length - barPadding)
-			.attr("height", y(0))
-			.transition().duration(1750).ease("linear")
-			.attr("y",  function(d) {
-				return y(d);
-			})
-			.attr("height", function(d) {
-				return h - y(d);
-	});
+        return i * (w / dataset.length);
+   })
+   .attr("y", function(d) {
+        return h - (d * 4);
+   });
 
-	}
+*/
 
+}
 </script>
 
 </body>
