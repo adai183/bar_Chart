@@ -22,6 +22,26 @@ function randombetween(min, max) {
   return Math.floor(Math.random()*(max-min+1)+min);
 }
 
+// helper function to shuffle array
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
 var dataset = [];
 var max = 100;
 var a = randombetween(1, max-3);
@@ -39,6 +59,7 @@ var updateData = function(){
 	c = randombetween(1, max-1-a-b);
 	d = max - a - b - c;
   dataset.push(a,b,c,d);
+	shuffle(dataset);
 	console.log(dataset);
 
 	drawVis();
@@ -67,7 +88,7 @@ var svg = d3.select("body")
 	.attr("height", h)
 	.attr("style", "display:none;");
 
-console.log(dataset);
+
 	// create inicial vis
 	function drawVis(){
 
