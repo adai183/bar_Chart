@@ -73,7 +73,7 @@ var update = setInterval(updateData, 2000);
 //Width and height
 var windowWidth = $(window).width();
 var windowHeight = $(window).height();
-var w = windowWidth * 98 / 100;
+var w = windowWidth * 95 / 100;
 var h = windowHeight * 98 / 100;
 var barPadding = windowWidth * 5 / 100;
 var bottomRectHight = w * 6 / 100;
@@ -126,7 +126,7 @@ function drawVis() {
         .attr("height", function(d) {
             return h - y(d);
         })
-/*
+
 		var textSel = svg.selectAll("text")
    			.data(dataset);
 
@@ -145,7 +145,7 @@ function drawVis() {
         return h - (d * 4);
    });
 
-*/
+
 
 }
 </script>
