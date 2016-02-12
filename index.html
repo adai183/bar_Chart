@@ -45,9 +45,9 @@ function shuffle(array) {
 
 var dataset = [];
 var max = 100;
-var a = randombetween(1, max - 3);
-var b = randombetween(1, max - 2 - a);
-var c = randombetween(1, max - 1 - a - b);
+var a = randombetween(0, max);
+var b = randombetween(0, max - a);
+var c = randombetween(0, max - a - b);
 var d = max - a - b - c;
 dataset.push(a, b, c, d);
 console.log(dataset);
@@ -55,9 +55,9 @@ console.log(dataset);
 // helper function too simulate live data
 var updateData = function() {
     dataset = [];
-    a = randombetween(0, max - 3);
-    b = randombetween(0, max - 2 - a);
-    c = randombetween(0, max - 1 - a - b);
+    a = randombetween(0, max);
+    b = randombetween(0, max - a);
+    c = randombetween(0, max - a - b);
     d = max - a - b - c;
     dataset.push(a, b, c, d);
     shuffle(dataset);
