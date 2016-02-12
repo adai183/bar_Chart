@@ -12,25 +12,36 @@ body{
 </head>
 
 <body>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 
 <script>
-var a = parseInt(Math.random() * 100),
-		b = parseInt(Math.random() * 100),
-		c = parseInt(Math.random() * 100),
-		d = parseInt(Math.random() * 100);
+// helper function to genarate random number in between min-max
+function randombetween(min, max) {
+  return Math.floor(Math.random()*(max-min+1)+min);
+}
 
-var dataset =[a, b, c, d];
+var dataset = [];
+var max = 100;
+var a = randombetween(1, max-3);
+var b = randombetween(1, max-2-a);
+var c = randombetween(1, max-1-a-b);
+var d = max - a - b - c;
+dataset.push(a,b,c,d);
+console.log(dataset);
 
 // helper function too simulate live data
 var updateData = function(){
-  dataset = [];
-  for (var i = 0; i < 4; i++){
-  	dataset.push(parseInt(Math.random() * 100));
-  }
+	dataset = [];
+	a = randombetween(1, max-3);
+	b = randombetween(1, max-2-a);
+	c = randombetween(1, max-1-a-b);
+	d = max - a - b - c;
+  dataset.push(a,b,c,d);
 	console.log(dataset);
-  drawVis();
+
+	drawVis();
 	$( "svg" ).fadeIn( "slow" );
 };
 
@@ -42,7 +53,7 @@ var windowWidth = $(window).width();
 var windowHeight = $(window).height();
 var w = windowWidth * 98/100;
 var h = windowHeight * 98/100;
-var barPadding = windowWidth * 5/100;
+var barPadding = windowWidth * 2/100;
 var bottomRectHight = w * 6/100;
 var y = d3.scale.sqrt()
     .range([h, 0])
