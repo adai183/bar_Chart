@@ -2,19 +2,88 @@
 <meta charset="utf-8">
 
 <head>
-	<style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<style>
 body{
 	background-color: black;
 }
+.question-container {
+margin:2% 0 5% 0;
+text-align: center;
+}
 
+.question {
+	color: white;
+}
 
-	</style>
+.chart-container {
+display: none;
+}
+
+.label {
+	color: white;
+	font-weight: 900;
+	font-size: 1.9em;
+	top: 80%;
+	width: 21%;
+	text-align: center;
+}
+
+.label h4 {
+		display: inline-block;
+		background-color: rgba(0,0,0,0.7);
+
+}
+
+#label1 {
+	position: absolute;
+	left: 2.5%;
+}
+
+#label2 {
+	position: absolute;
+	left: 27.5%;
+}
+
+#label3 {
+	position: absolute;
+	left: 52.5%;
+}
+
+#label4 {
+	position: absolute;
+	left: 77.5%;
+}
+</style>
 </head>
 
 <body>
+<div class="container">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
+	<div class="question-container">
+		<h1 class="question">DO YOU THINK D3 HAS A STEEP LEARNING CURVE ?</h1>
+	</div>
+
+	<div class="chart-container">
+
+			<div id="label1" class="label">
+				<h4>YES. Stay away from it.</h4>
+			</div>
+			<div id="label2" class="label">
+				<h4>YES. But it is awesome.</h4>
+		 </div>
+			<div id="label3" class="label">
+				<h4>Don't know.</h4>
+			</div>
+			<div id="label4" class="label">
+				<h4>NO. It is pretty easy.</h4>
+			</div>
+
+	</div>
+
+</div>
+
 
 <script>
 // helper function to genarate random number in between min-max
@@ -45,6 +114,7 @@ function shuffle(array) {
 
 // Algorithm to simulate poll
 
+/*
 // create inicial random dataset
 var votes = [0, 0, 0, 0];
 var dataset = [0, 0, 0, 0];
@@ -74,8 +144,7 @@ var updateData = function() {
   drawVis();
   $("svg").fadeIn("slow");
 };
-
-/*
+*/
 var dataset = [];
 var max = 100;
 var a = randombetween(0, max);
@@ -97,26 +166,29 @@ var updateData = function() {
     console.log(dataset);
 
     drawVis();
-    $("svg").fadeIn("slow");
+    $(".chart-container").fadeIn("slow");
+		setTimeout(function(){
+			$("svg").fadeIn("slow");
+		}, 1000);
 };
-*/
+
 // simullate live data input
-var update = setInterval(updateData, 750);
+var update = setInterval(updateData, 1750);
 
 //Width and height
 var windowWidth = $(window).width();
 var windowHeight = $(window).height();
-var w = windowWidth * 95 / 100;
-var h = windowHeight * 98 / 100;
+var w = windowWidth;
+var h = windowHeight * 80 / 100;
 var barPadding = windowWidth * 5 / 100;
-var bottomRectHight = w * 6 / 100;
+var bottomRectHight = w * 3 / 100;
 var y = d3.scale.sqrt()
     .range([h, 0])
     .domain([0, 100]); //since values vary between 0 and 100
 
 
 //Create SVG element
-var svg = d3.select("body")
+var svg = d3.select(".chart-container")
     .append("svg")
     .attr("width", w)
     .attr("height", h)
@@ -152,32 +224,14 @@ function drawVis() {
         })
         .attr("width", w / dataset.length - barPadding)
         .attr("height", y(0))
-        .transition().duration(750).ease("linear")
+        .transition().duration(1750).ease("linear")
         .attr("y", function(d) {
             return y(d);
         })
         .attr("height", function(d) {
             return h - y(d);
-        })
-/*
-		var textSel = svg.selectAll("text")
-   			.data(dataset);
+        });
 
-		textSel.remove();
-
-		textSel
-			.enter()
-			.append("text")
-			.text(function(d) {
-        return d;
-   		})
-			.attr("x", function(d, i) {
-        return i * (w / dataset.length);
-   })
-   .attr("y", function(d) {
-        return h - (d * 4);
-   });
-*/
 
 
 }
