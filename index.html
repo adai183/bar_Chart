@@ -233,6 +233,23 @@ function drawVis() {
         });
 
 
+		var percentageLabels = svg.selectAll(".percentage-label")
+        .data(dataset);
+
+		percentageLabels.remove();
+
+		percentageLabels
+        .enter()
+        .append("text")
+				.attr("class", "percentage-label")
+				.style("fill", "white")
+        .text(function(d) {
+            return d;
+        })
+				.attr("x", function(d, i) {
+            return i * (w / dataset.length) + 2.5 / 100 * w + w * 10/100;
+        });
+
 
 }
 </script>
