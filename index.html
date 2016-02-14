@@ -24,7 +24,7 @@ display: none;
 .label {
 	color: white;
 	font-weight: 900;
-	font-size: 1.3em;
+	font-size:  1.3em;
 	top: 80%;
 	width: 21%;
 	text-align: center;
@@ -54,6 +54,24 @@ display: none;
 #label4 {
 	position: absolute;
 	left: 77.5%;
+}
+
+@media (max-width:100px){
+	.label{
+		font-size: 1.3em;
+		}
+}
+
+@media (max-width:1600px){
+	.label{
+		font-size: 1.8em;
+		}
+}
+
+@media (min-width:2000px){
+	.label {
+		font-size: 2.5em;
+		}
 }
 </style>
 </head>
@@ -229,7 +247,7 @@ function drawVis() {
 				.style("font-size", "2em")
 				.attr("x", function(d, i) {
             return i * (w / dataset.length) + 2.5 / 100 * w + w * 8/100;
-        })
+        });
 
     uSel.select("rect")
         .attr("x", function(d, i) {
@@ -250,9 +268,12 @@ function drawVis() {
 				.attr("y", function(d) {
 						return y(d) + h* 6/100;
 				})
-        .text(function(d) {
-            return d + "%";
-        });
+        .tween("text", function(d) {
+					 var i = d3.interpolate(this.textContent.replace('%', ''), d);
+					 return function(t) {
+            this.textContent = Math.round(i(t)) + "%";
+        	};
+				});
 }
 </script>
 
