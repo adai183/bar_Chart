@@ -24,7 +24,7 @@ display: none;
 .label {
 	color: white;
 	font-weight: 900;
-	font-size: 1.9em;
+	font-size: 1.3em;
 	top: 80%;
 	width: 21%;
 	text-align: center;
@@ -141,8 +141,11 @@ var updateData = function() {
 
   voteRate *= 1.2;
 
-  drawVis();
-  $("svg").fadeIn("slow");
+	drawVis();
+	$(".chart-container").fadeIn("slow");
+	setTimeout(function(){
+		$("svg").fadeIn("slow");
+	}, 1000);
 };
 */
 var dataset = [];
@@ -152,7 +155,7 @@ var b = randombetween(0, max - a);
 var c = randombetween(0, max - a - b);
 var d = max - a - b - c;
 dataset.push(a, b, c, d);
-console.log(dataset);
+//console.log(dataset);
 
 // helper function too simulate live data
 var updateData = function() {
@@ -163,7 +166,7 @@ var updateData = function() {
     d = max - a - b - c;
     dataset.push(a, b, c, d);
     shuffle(dataset);
-    console.log(dataset);
+    //console.log(dataset);
 
     drawVis();
     $(".chart-container").fadeIn("slow");
@@ -207,18 +210,28 @@ var rectangle = svg.append("rect")
 // create inicial vis
 function drawVis() {
 
-    var uSel = svg.selectAll(".input")
+    var uSel = svg.selectAll(".bar")
         .data(dataset);
 
     uSel.exit().remove();
 
-    uSel
+    var gs = uSel
         .enter()
-        .append("rect")
-        .attr("class", "input")
+        .append("g")
+        .attr("class", "bar");
+
+    gs.append("rect")
         .attr("fill", "rgb(250, 128, 114)");
 
-    uSel
+    gs.append("text")
+				.attr("class", "percentage-label")
+				.style("fill", "black")
+				.style("font-size", "2em")
+				.attr("x", function(d, i) {
+            return i * (w / dataset.length) + 2.5 / 100 * w + w * 8/100;
+        })
+
+    uSel.select("rect")
         .attr("x", function(d, i) {
             return i * (w / dataset.length) + 2.5 / 100 * w;
         })
@@ -232,26 +245,14 @@ function drawVis() {
             return h - y(d);
         });
 
-
-		var percentageLabels = svg.selectAll(".percentage-label")
-        .data(dataset);
-
-		percentageLabels.remove();
-
-		percentageLabels
-        .enter()
-        .append("text")
-				.attr("class", "percentage-label")
-				.style("fill", "white")
+    uSel.select("text")
+				.transition().duration(1750).ease("linear")
+				.attr("y", function(d) {
+						return y(d) + h* 6/100;
+				})
         .text(function(d) {
-            return d;
-        })
-				.attr("y",h * 80/100)
-				.attr("x", function(d, i) {
-            return i * (w / dataset.length) + 2.5 / 100 * w + w * 10/100;
+            return d + "%";
         });
-
-
 }
 </script>
 
