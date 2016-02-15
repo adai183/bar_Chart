@@ -1,0 +1,68 @@
+body{
+	background-color: black;
+}
+.question-container {
+margin:2% 0 5% 0;
+text-align: center;
+}
+
+.question {
+	color: white;
+}
+
+.chart-container {
+display: none;
+}
+
+.label {
+	color: white;
+	font-weight: 900;
+	font-size:  1.3em;
+	top: 75%;
+	width: 21%;
+	text-align: center;
+}
+
+.label h4 {
+		display: inline-block;
+		background-color: rgba(0,0,0,0.7);
+
+}
+
+#label1 {
+	position: absolute;
+	left: 2.5%;
+}
+
+#label2 {
+	position: absolute;
+	left: 27.5%;
+}
+
+#label3 {
+	position: absolute;
+	left: 52.5%;
+}
+
+#label4 {
+	position: absolute;
+	left: 77.5%;
+}
+
+@media  only screen and (min-width:1000px){
+	.label{
+		font-size: 1.5em;
+		}
+}
+
+@media  only screen and (min-width:1600px){
+	.label{
+		font-size: 2.2em;
+		}
+}
+
+@media only screen and (min-width: 2000px) {
+	.label {
+		font-size: 2.8em;
+		}
+}
