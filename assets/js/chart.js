@@ -7,6 +7,14 @@ var w = windowWidth;
 var h = windowHeight * 80 / 100;
 var barPadding = windowWidth * 5 / 100;
 var bottomRectHight = w * 3 / 100;
+
+// Responsive Options
+
+$(window).on('orientationchange', function(e) {
+     location.reload();
+});
+
+
 var y = d3.scale.linear()
     .range([h, 0])
     .domain([0, 100]); //since values vary between 0 and 100
@@ -48,7 +56,15 @@ function drawVis() {
     gs.append("text")
 				.attr("class", "percentage-label")
 				.style("fill", "black")
-				.style("font-size", "2.5em")
+				.style("font-size", function(){
+          var fontsize;
+          if (w<1000){
+            fontsize = "1.8em";
+          }else {
+            fontsize = "2.5em";
+          }
+          return fontsize
+        })
 				.attr("x", function(d, i) {
             return i * (w / dataset.length) + 2.5 / 100 * w + w * 8/100;
         });
