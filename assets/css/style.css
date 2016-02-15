@@ -49,7 +49,7 @@ display: none;
 	left: 77.5%;
 }
 
-@media  only screen and (min-width:1000px){
+@media  only screen and (max-width:1000px){
 	.label{
 		font-size: 1.5em;
 		}

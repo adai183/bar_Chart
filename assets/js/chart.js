@@ -9,6 +9,14 @@ var barPadding = windowWidth * 5 / 100;
 var bottomRectHight = w * 3 / 100;
 
 // Responsive Options
+var fontsize = function(){
+  if (w<1000){
+    fontsize = "1.8em";
+  }else {
+    fontsize = "2.5em";
+  }
+  return fontsize;
+};
 
 $(window).on('orientationchange', function(e) {
      location.reload();
@@ -56,15 +64,7 @@ function drawVis() {
     gs.append("text")
 				.attr("class", "percentage-label")
 				.style("fill", "black")
-				.style("font-size", function(){
-          var fontsize;
-          if (w<1000){
-            fontsize = "1.8em";
-          }else {
-            fontsize = "2.5em";
-          }
-          return fontsize
-        })
+				.style("font-size", fontsize)
 				.attr("x", function(d, i) {
             return i * (w / dataset.length) + 2.5 / 100 * w + w * 8/100;
         });
